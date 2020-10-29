@@ -506,9 +506,9 @@
     #define DEFAULT_Ki_LIST {   1.54,   1.54 }
     #define DEFAULT_Kd_LIST {  76.55,  76.55 }
   #else
-    #define DEFAULT_Kp 31.32
-    #define DEFAULT_Ki   4.25
-    #define DEFAULT_Kd  57.75
+    #define DEFAULT_Kp  30.88
+    #define DEFAULT_Ki   4.23
+    #define DEFAULT_Kd  56.31
   #endif
 #endif // PIDTEMP
 
@@ -546,15 +546,15 @@
   //#define PID_BED_DEBUG // Sends debug data to the serial port.
 
   // Creality Ender-3 Pro
-																									   
-  #define DEFAULT_bedKp 123.45
-  #define DEFAULT_bedKi 22.97
-  #define DEFAULT_bedKd 442.37
+							
+  #define DEFAULT_bedKp 161,19
+  #define DEFAULT_bedKi 31.41
+  #define DEFAULT_bedKd 551.37
 
   // FIND YOUR OWN: "M303 E-1 C8 S90" to run autotune on the bed at 90 degreesC for 8 cycles.
-							 
-							 
-							  
+		
+		
+		 
 
 #endif // PIDTEMPBED
 
@@ -752,7 +752,7 @@
  * Override with M92
  *                                      X, Y, Z, E0 [, E1[, E2...]]
  */
-#define DEFAULT_AXIS_STEPS_PER_UNIT   { 80, 80, 400, 90.07 }
+#define DEFAULT_AXIS_STEPS_PER_UNIT   { 80, 80, 400, 139.7 }
 
 /**
  * Default Max Feed Rate (mm/s)
@@ -805,7 +805,7 @@
   #define DEFAULT_YJERK 10.0
   #define DEFAULT_ZJERK  0.3
 
-  //#define TRAVEL_EXTRA_XYJERK 5.0     // Additional jerk allowance for all travel moves
+  #define TRAVEL_EXTRA_XYJERK 5.0     // Additional jerk allowance for all travel moves
 
   //#define LIMITED_JERK_EDITING        // Limit edit via M205 or LCD to DEFAULT_aJERK * 2
   #if ENABLED(LIMITED_JERK_EDITING)
@@ -997,7 +997,7 @@
  *     |    [-]    |
  *     O-- FRONT --+
  */
-#define NOZZLE_TO_PROBE_OFFSET { -45.50, -8.10, -3.330 }
+#define NOZZLE_TO_PROBE_OFFSET { -45.50, -8.10, -2.7 }
 
 // Most probes should stay away from the edges of the bed, but
 // with NOZZLE_AS_PROBE this can be negative for a wider probing area.
@@ -1043,8 +1043,9 @@
 #define Z_CLEARANCE_MULTI_PROBE     5 // Z Clearance between multiple probes
 //#define Z_AFTER_PROBING           5 // Z position after probing is done
 
-
 #define Z_PROBE_LOW_POINT          -20 // Farthest distance below the trigger-point to go before stopping
+
+																										 
 
 // For M851 give a range for adjusting the Z probe offset
 #define Z_PROBE_OFFSET_RANGE_MIN -20
@@ -1515,7 +1516,7 @@
 
 // Preheat Constants
 #define PREHEAT_1_LABEL       "PLA+"
-#define PREHEAT_1_TEMP_HOTEND 230
+#define PREHEAT_1_TEMP_HOTEND 220
 #define PREHEAT_1_TEMP_BED     60
 #define PREHEAT_1_FAN_SPEED   255 // Value from 0 to 255
 
@@ -1523,6 +1524,11 @@
 #define PREHEAT_2_TEMP_HOTEND 240
 #define PREHEAT_2_TEMP_BED    110
 #define PREHEAT_2_FAN_SPEED   255 // Value from 0 to 255
+
+#define PREHEAT_3_LABEL       "PLA"
+#define PREHEAT_3_TEMP_HOTEND 200
+#define PREHEAT_3_TEMP_BED     60
+#define PREHEAT_3_FAN_SPEED   255 // Value from 0 to 255
 
 /**
  * Nozzle Park
@@ -2204,7 +2210,7 @@
 
 //
 // Third-party or vendor-customized controller interfaces.
-// Sources should be installed in 'src/lcd/extui'.
+// Sources should be installed in 'src/lcd/extensible_ui'.
 //
 //#define EXTENSIBLE_UI
 
@@ -2219,18 +2225,18 @@
 /**
  * Specific TFT Model Presets. Enable one of the following options
   
-						 
-				   
-																		
-										 
-													 
-				
+	   
+	   
+				  
+		   
+			  
+	
   
  * or enable TFT_GENERIC and set sub-options.
-						   
-																									 
-										 
-														
+		 
+						  
+		   
+			  
  */
 
 //
