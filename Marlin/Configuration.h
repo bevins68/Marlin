@@ -438,11 +438,11 @@
 #define DUMMY_THERMISTOR_998_VALUE 25
 #define DUMMY_THERMISTOR_999_VALUE 100
 
-// Resistor values when using MAX31865 sensors (-5) on TEMP_SENSOR_0 / 1
-//#define MAX31865_SENSOR_OHMS_0      100   // (Ω) Typically 100 or 1000 (PT100 or PT1000)
-//#define MAX31865_CALIBRATION_OHMS_0 430   // (Ω) Typically 430 for AdaFruit PT100; 4300 for AdaFruit PT1000
-//#define MAX31865_SENSOR_OHMS_1      100
-//#define MAX31865_CALIBRATION_OHMS_1 430
+// Resistor values when using a MAX31865 (sensor -5)
+// Sensor value is typically 100 (PT100) or 1000 (PT1000)
+// Calibration value is typically 430 ohm for AdaFruit PT100 modules and 4300 ohm for AdaFruit PT1000 modules.
+//#define MAX31865_SENSOR_OHMS      100
+//#define MAX31865_CALIBRATION_OHMS 430
 
 // Use temp sensor 1 as a redundant sensor with sensor 0. If the readings
 // from the two sensors differ too much the print will be aborted.
@@ -548,9 +548,9 @@
 
   // Creality Ender-3 Pro
 							
-  #define DEFAULT_bedKp 161,19
-  #define DEFAULT_bedKi 31.41
-  #define DEFAULT_bedKd 551.37
+  #define DEFAULT_bedKp 86.17
+  #define DEFAULT_bedKi 15.81
+  #define DEFAULT_bedKd 313.15
 
   // FIND YOUR OWN: "M303 E-1 C8 S90" to run autotune on the bed at 90 degreesC for 8 cycles.
 		
@@ -1000,7 +1000,7 @@
  *     |    [-]    |
  *     O-- FRONT --+
  */
-#define NOZZLE_TO_PROBE_OFFSET { -45.50, -8.10, -3.170 }
+#define NOZZLE_TO_PROBE_OFFSET { -45.50, -8.10, -3.150 }
 
 // Most probes should stay away from the edges of the bed, but
 // with NOZZLE_AS_PROBE this can be negative for a wider probing area.
@@ -1146,7 +1146,7 @@
 #define Y_MIN_POS -14
 #define Z_MIN_POS 0
 #define X_MAX_POS X_BED_SIZE
-#define Y_MAX_POS Y_BED_SIZE
+#define Y_MAX_POS 230
 #define Z_MAX_POS 250
 
 /**
@@ -1274,8 +1274,8 @@
  */
 //#define AUTO_BED_LEVELING_3POINT
 //#define AUTO_BED_LEVELING_LINEAR
-//#define AUTO_BED_LEVELING_BILINEAR
-#define AUTO_BED_LEVELING_UBL
+#define AUTO_BED_LEVELING_BILINEAR
+//#define AUTO_BED_LEVELING_UBL
 //#define MESH_BED_LEVELING
 
 /**
