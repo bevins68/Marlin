@@ -58,15 +58,15 @@
 //===========================================================================
 //============================= DELTA Printer ===============================
 //===========================================================================
-// For a Delta printer start with one of the configuration files in the
-// config/examples/delta directory and customize for your machine.
+// For a Delta printer, start with one of the configuration files in the config/examples/delta directory
+// from https://github.com/MarlinFirmware/Configurations/branches/all and customize for your machine.
 //
 
 //===========================================================================
 //============================= SCARA Printer ===============================
 //===========================================================================
-// For a SCARA printer start with the configuration files in
-// config/examples/SCARA and customize for your machine.
+// For a SCARA printer, start with one of the configuration files in the config/examples/SCARA directory
+// from https://github.com/MarlinFirmware/Configurations/branches/all and customize for your machine.
 //
 
 // @section info
@@ -160,33 +160,19 @@
 #endif
 
 /**
- * Průša MK2 Single Nozzle Multi-Material Multiplexer, and variants.
+ * Multi-Material Unit
+ * Set to one of these predefined models:
  *
- * This device allows one stepper driver on a control board to drive
- * two to eight stepper motors, one at a time, in a manner suitable
- * for extruders.
- *
- * This option only allows the multiplexer to switch on tool-change.
- * Additional options to configure custom E moves are pending.
- */
-//#define MK2_MULTIPLEXER
-#if ENABLED(MK2_MULTIPLEXER)
-  // Override the default DIO selector pins here, if needed.
-  // Some pins files may provide defaults for these pins.
-  //#define E_MUX0_PIN 40  // Always Required
-  //#define E_MUX1_PIN 42  // Needed for 3 to 8 inputs
-  //#define E_MUX2_PIN 44  // Needed for 5 to 8 inputs
-#endif
-
-/**
- * Průša Multi-Material Unit v2
+ *   PRUSA_MMU1      : Průša MMU1 (The "multiplexer" version)
+ *   PRUSA_MMU2      : Průša MMU2
+ *   PRUSA_MMU2S     : Průša MMU2S (Requires MK3S extruder with motion sensor, EXTRUDERS = 5)
+ *   SMUFF_EMU_MMU2  : Technik Gegg SMUFF (Průša MMU2 emulation mode)
+ *   SMUFF_EMU_MMU2S : Technik Gegg SMUFF (Průša MMU2S emulation mode)
  *
  * Requires NOZZLE_PARK_FEATURE to park print head in case MMU unit fails.
- * Requires EXTRUDERS = 5
- *
- * For additional configuration see Configuration_adv.h
+ * See additional options in Configuration_adv.h.
  */
-//#define PRUSA_MMU2
+//#define MMU_MODEL PRUSA_MMU2
 
 // A dual extruder that uses a single stepper motor
 //#define SWITCHING_EXTRUDER
@@ -391,8 +377,10 @@
  *    13 : 100k Hisens 3950  1% up to 300°C for hotend "Simple ONE " & "Hotend "All In ONE"
  *    15 : 100k thermistor calibration for JGAurora A5 hotend
  *    18 : ATC Semitec 204GT-2 (4.7k pullup) Dagoma.Fr - MKS_Base_DKU001327
- *    20 : Pt100 with circuit in the Ultimainboard V2.x with 5v excitation (AVR)
- *    21 : Pt100 with circuit in the Ultimainboard V2.x with 3.3v excitation (STM32 \ LPC176x....)
+ *    20 : Pt100 with circuit in the Ultimainboard V2.x with mainboard ADC reference voltage = INA826 amplifier-board supply voltage.
+ *         NOTES: (1) Must use an ADC input with no pullup. (2) Some INA826 amplifiers are unreliable at 3.3V so consider using sensor 147, 110, or 21.
+ *    21 : Pt100 with circuit in the Ultimainboard V2.x with 3.3v ADC reference voltage (STM32, LPC176x....) and 5V INA826 amplifier board supply.
+ *         NOTE: ADC pins are not 5V tolerant. Not recommended because it's possible to damage the CPU by going over 500°C.
  *    22 : 100k (hotend) with 4.7k pullup to 3.3V and 220R to analog input (as in GTM32 Pro vB)
  *    23 : 100k (bed) with 4.7k pullup to 3.3v and 220R to analog input (as in GTM32 Pro vB)
  *    30 : Kis3d Silicone heating mat 200W/300W with 6mm precision cast plate (EN AW 5083) NTC100K / B3950 (4.7k pullup)
@@ -438,11 +426,11 @@
 #define DUMMY_THERMISTOR_998_VALUE 25
 #define DUMMY_THERMISTOR_999_VALUE 100
 
-// Resistor values when using a MAX31865 (sensor -5)
-// Sensor value is typically 100 (PT100) or 1000 (PT1000)
-// Calibration value is typically 430 ohm for AdaFruit PT100 modules and 4300 ohm for AdaFruit PT1000 modules.
-//#define MAX31865_SENSOR_OHMS      100
-//#define MAX31865_CALIBRATION_OHMS 430
+// Resistor values when using MAX31865 sensors (-5) on TEMP_SENSOR_0 / 1
+//#define MAX31865_SENSOR_OHMS_0      100   // (Ω) Typically 100 or 1000 (PT100 or PT1000)
+//#define MAX31865_CALIBRATION_OHMS_0 430   // (Ω) Typically 430 for AdaFruit PT100; 4300 for AdaFruit PT1000
+//#define MAX31865_SENSOR_OHMS_1      100
+//#define MAX31865_CALIBRATION_OHMS_1 430
 
 // Use temp sensor 1 as a redundant sensor with sensor 0. If the readings
 // from the two sensors differ too much the print will be aborted.
@@ -507,9 +495,9 @@
     #define DEFAULT_Ki_LIST {   1.54,   1.54 }
     #define DEFAULT_Kd_LIST {  76.55,  76.55 }
   #else
-    #define DEFAULT_Kp  30.88
-    #define DEFAULT_Ki   4.23
-    #define DEFAULT_Kd  56.31
+    #define DEFAULT_Kp  21.73
+    #define DEFAULT_Ki   1.54
+    #define DEFAULT_Kd  76.55
   #endif
 #endif // PIDTEMP
 
@@ -547,16 +535,11 @@
   //#define PID_BED_DEBUG // Sends debug data to the serial port.
 
   // Creality Ender-3 Pro
-							
-  #define DEFAULT_bedKp 161,19
-  #define DEFAULT_bedKi 31.41
-  #define DEFAULT_bedKd 551.37
+  #define DEFAULT_bedKp 50.71
+  #define DEFAULT_bedKi 9.88
+  #define DEFAULT_bedKd 173.43
 
   // FIND YOUR OWN: "M303 E-1 C8 S90" to run autotune on the bed at 90 degreesC for 8 cycles.
-		
-		
-		 
-
 #endif // PIDTEMPBED
 
 #if EITHER(PIDTEMP, PIDTEMPBED)
@@ -584,7 +567,7 @@
  * Note: For Bowden Extruders make this large enough to allow load/unload.
  */
 #define PREVENT_LENGTHY_EXTRUDE
-#define EXTRUDE_MAXLENGTH 600
+#define EXTRUDE_MAXLENGTH 100
 
 //===========================================================================
 //======================== Thermal Runaway Protection =======================
@@ -802,7 +785,7 @@
  * When changing speed and direction, if the difference is less than the
  * value set here, it may happen instantaneously.
  */
-//#define CLASSIC_JERK
+#define CLASSIC_JERK
 #if ENABLED(CLASSIC_JERK)
   #define DEFAULT_XJERK 10.0
   #define DEFAULT_YJERK 10.0
@@ -839,7 +822,7 @@
  *
  * See https://github.com/synthetos/TinyG/wiki/Jerk-Controlled-Motion-Explained
  */
-#define S_CURVE_ACCELERATION
+//#define S_CURVE_ACCELERATION
 
 //===========================================================================
 //============================= Z Probe Options =============================
@@ -858,7 +841,7 @@
 #define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN
 
 // Force the use of the probe for Z-axis homing
-#define USE_PROBE_FOR_Z_HOMING
+//#define USE_PROBE_FOR_Z_HOMING
 
 /**
  * Z_MIN_PROBE_PIN
@@ -899,6 +882,12 @@
 //#define FIX_MOUNTED_PROBE
 
 /**
+ * Use the nozzle as the probe, with the hotend
+ * assembly attached to a sensitive strain gauge.
+ */
+//#define STRAIN_GAUGE_PROBE
+
+/**
  * Use the nozzle as the probe, as with a conductive
  * nozzle system or a piezo-electric smart effector.
  */
@@ -914,11 +903,6 @@
  * The BLTouch probe uses a Hall effect sensor and emulates a servo.
  */
 #define BLTOUCH
-
-/**
- * Pressure sensor with a BLTouch-like interface
- */
-//#define CREALITY_TOUCH
 
 /**
  * Touch-MI Probe by hotends.fr
@@ -973,10 +957,20 @@
 /**
  * Nozzle-to-Probe offsets { X, Y, Z }
  *
- * - Use a caliper or ruler to measure the distance from the tip of
+ * X and Y offset
+ *   Use a caliper or ruler to measure the distance from the tip of
  *   the Nozzle to the center-point of the Probe in the X and Y axes.
+ *
+ * Z offset
  * - For the Z offset use your best known value and adjust at runtime.
- * - Probe Offsets can be tuned at runtime with 'M851', LCD menus, babystepping, etc.
+ * - Common probes trigger below the nozzle and have negative values for Z offset.
+ * - Probes triggering above the nozzle height are uncommon but do exist. When using
+ *   probes such as this, carefully set Z_CLEARANCE_DEPLOY_PROBE and Z_CLEARANCE_BETWEEN_PROBES
+ *   to avoid collisions during probing.
+ *
+ * Tune and Adjust
+ * -  Probe Offsets can be tuned at runtime with 'M851', LCD menus, babystepping, etc.
+ * -  PROBE_OFFSET_WIZARD (configuration_adv.h) can be used for setting the Z offset.
  *
  * Assuming the typical work area orientation:
  *  - Probe to RIGHT of the Nozzle has a Positive X offset
@@ -1000,20 +994,47 @@
  *     |    [-]    |
  *     O-- FRONT --+
  */
-#define NOZZLE_TO_PROBE_OFFSET { -45.50, -8.10, -3.030 }
+#define NOZZLE_TO_PROBE_OFFSET { -45.50, -8.1, -3.030 }
 
 // Most probes should stay away from the edges of the bed, but
 // with NOZZLE_AS_PROBE this can be negative for a wider probing area.
-#define PROBING_MARGIN 20
+#define PROBING_MARGIN 10
 
 // X and Y axis travel speed (mm/min) between probes
 #define XY_PROBE_SPEED (100*60)
 
 // Feedrate (mm/min) for the first approach when double-probing (MULTIPLE_PROBING == 2)
-#define Z_PROBE_SPEED_FAST HOMING_FEEDRATE_Z
+#define Z_PROBE_SPEED_FAST (4*60)
 
 // Feedrate (mm/min) for the "accurate" probe of each point
 #define Z_PROBE_SPEED_SLOW (Z_PROBE_SPEED_FAST / 2)
+
+/**
+ * Probe Activation Switch
+ * A switch indicating proper deployment, or an optical
+ * switch triggered when the carriage is near the bed.
+ */
+//#define PROBE_ACTIVATION_SWITCH
+#if ENABLED(PROBE_ACTIVATION_SWITCH)
+  #define PROBE_ACTIVATION_SWITCH_STATE LOW // State indicating probe is active
+  //#define PROBE_ACTIVATION_SWITCH_PIN PC6 // Override default pin
+#endif
+
+/**
+ * Tare Probe (determine zero-point) prior to each probe.
+ * Useful for a strain gauge or piezo sensor that needs to factor out
+ * elements such as cables pulling on the carriage.
+ */
+//#define PROBE_TARE
+#if ENABLED(PROBE_TARE)
+  #define PROBE_TARE_TIME  200    // (ms) Time to hold tare pin
+  #define PROBE_TARE_DELAY 200    // (ms) Delay after tare before
+  #define PROBE_TARE_STATE HIGH   // State to write pin for tare
+  //#define PROBE_TARE_PIN PA5    // Override default pin
+  #if ENABLED(PROBE_ACTIVATION_SWITCH)
+    //#define PROBE_TARE_ONLY_WHILE_INACTIVE  // Fail to tare/probe if PROBE_ACTIVATION_SWITCH is active
+  #endif
+#endif
 
 /**
  * Multiple Probing
@@ -1046,9 +1067,7 @@
 #define Z_CLEARANCE_MULTI_PROBE     5 // Z Clearance between multiple probes
 //#define Z_AFTER_PROBING           5 // Z position after probing is done
 
-#define Z_PROBE_LOW_POINT          -20 // Farthest distance below the trigger-point to go before stopping
-
-																										 
+#define Z_PROBE_LOW_POINT          -2 // Farthest distance below the trigger-point to go before stopping
 
 // For M851 give a range for adjusting the Z probe offset
 #define Z_PROBE_OFFSET_RANGE_MIN -20
@@ -1077,6 +1096,13 @@
 //#define PROBING_FANS_OFF          // Turn fans off when probing
 //#define PROBING_STEPPERS_OFF      // Turn steppers off (unless needed to hold position) when probing
 //#define DELAY_BEFORE_PROBING 200  // (ms) To prevent vibrations from triggering piezo sensors
+
+// Require minimum nozzle and/or bed temperature for probing
+//#define PREHEAT_BEFORE_PROBING
+#if ENABLED(PREHEAT_BEFORE_PROBING)
+  #define PROBING_NOZZLE_TEMP 120   // (°C) Only applies to E0 at this time
+  #define PROBING_BED_TEMP     50
+#endif
 
 // For Inverting Stepper Enable Pins (Active Low) use 0, Non Inverting (Active High) use 1
 // :{ 0:'Low', 1:'High' }
@@ -1120,8 +1146,8 @@
 
 // @section homing
 
-//#define NO_MOTION_BEFORE_HOMING // Inhibit movement until all axes have been homed
-
+//#define NO_MOTION_BEFORE_HOMING // Inhibit movement until all axes have been homed. Also enable HOME_AFTER_DEACTIVATE for extra safety.
+//#define HOME_AFTER_DEACTIVATE   // Require rehoming after steppers are deactivated. Also enable NO_MOTION_BEFORE_HOMING for extra safety.
 //#define UNKNOWN_Z_NO_RAISE      // Don't raise Z (lower the bed) if Z is "unknown." For beds that fall when Z is powered off.
 
 //#define Z_HOMING_HEIGHT  4      // (mm) Minimal Z height before homing (G28) for Z clearance above the bed, clamps, ...
@@ -1197,25 +1223,41 @@
   #define NUM_RUNOUT_SENSORS   1          // Number of sensors, up to one per extruder. Define a FIL_RUNOUT#_PIN for each.
 
   #define FIL_RUNOUT_STATE     LOW        // Pin state indicating that filament is NOT present.
-  #define FIL_RUNOUT_PULL                 // Use internal pullup / pulldown for filament runout pins.
+  #define FIL_RUNOUT_PULLUP               // Use internal pullup for filament runout pins.
+  //#define FIL_RUNOUT_PULLDOWN           // Use internal pulldown for filament runout pins.
 
   // Override individually if the runout sensors vary
   //#define FIL_RUNOUT1_STATE LOW
-  //#define FIL_RUNOUT1_PULL
+  //#define FIL_RUNOUT1_PULLUP
+  //#define FIL_RUNOUT1_PULLDOWN
+
   //#define FIL_RUNOUT2_STATE LOW
-  //#define FIL_RUNOUT2_PULL
+  //#define FIL_RUNOUT2_PULLUP
+  //#define FIL_RUNOUT2_PULLDOWN
+
   //#define FIL_RUNOUT3_STATE LOW
-  //#define FIL_RUNOUT3_PULL
+  //#define FIL_RUNOUT3_PULLUP
+  //#define FIL_RUNOUT3_PULLDOWN
+
   //#define FIL_RUNOUT4_STATE LOW
-  //#define FIL_RUNOUT4_PULL
+  //#define FIL_RUNOUT4_PULLUP
+  //#define FIL_RUNOUT4_PULLDOWN
+
   //#define FIL_RUNOUT5_STATE LOW
-  //#define FIL_RUNOUT5_PULL
+  //#define FIL_RUNOUT5_PULLUP
+  //#define FIL_RUNOUT5_PULLDOWN
+
   //#define FIL_RUNOUT6_STATE LOW
-  //#define FIL_RUNOUT6_PULL
+  //#define FIL_RUNOUT6_PULLUP
+  //#define FIL_RUNOUT6_PULLDOWN
+
   //#define FIL_RUNOUT7_STATE LOW
-  //#define FIL_RUNOUT7_PULL
+  //#define FIL_RUNOUT7_PULLUP
+  //#define FIL_RUNOUT7_PULLDOWN
+
   //#define FIL_RUNOUT8_STATE LOW
-  //#define FIL_RUNOUT8_PULL
+  //#define FIL_RUNOUT8_PULLUP
+  //#define FIL_RUNOUT8_PULLDOWN
 
   // Set one or more commands to execute on filament runout.
   // (After 'M412 H' Marlin will ask the host to handle the process.)
@@ -1274,15 +1316,26 @@
  */
 //#define AUTO_BED_LEVELING_3POINT
 //#define AUTO_BED_LEVELING_LINEAR
-//#define AUTO_BED_LEVELING_BILINEAR
-#define AUTO_BED_LEVELING_UBL
+#define AUTO_BED_LEVELING_BILINEAR
+//#define AUTO_BED_LEVELING_UBL
 //#define MESH_BED_LEVELING
 
 /**
- * Normally G28 leaves leveling disabled on completion. Enable
- * this option to have G28 restore the prior leveling state.
+ * Normally G28 leaves leveling disabled on completion. Enable one of
+ * these options to restore the prior leveling state or to always enable
+ * leveling immediately after G28.
  */
 #define RESTORE_LEVELING_AFTER_G28
+//#define ENABLE_LEVELING_AFTER_G28
+
+/**
+ * Auto-leveling needs preheating
+ */
+//#define PREHEAT_BEFORE_LEVELING
+#if ENABLED(PREHEAT_BEFORE_LEVELING)
+  #define LEVELING_NOZZLE_TEMP 120   // (°C) Only applies to E0 at this time
+  #define LEVELING_BED_TEMP     50
+#endif
 
 /**
  * Enable detailed logging of G28, G29, M48, etc.
@@ -1296,6 +1349,9 @@
   // at which point movement will be level to the machine's XY plane.
   // The height can be set with M420 Z<height>
   #define ENABLE_LEVELING_FADE_HEIGHT
+  #if ENABLED(ENABLE_LEVELING_FADE_HEIGHT)
+    #define DEFAULT_LEVELING_FADE_HEIGHT 10.0 // (mm) Default fade height.
+  #endif
 
   // For Cartesian machines, instead of dividing moves on mesh boundaries,
   // split up moves into short segments like a Delta. This follows the
@@ -1306,11 +1362,11 @@
   /**
    * Enable the G26 Mesh Validation Pattern tool.
    */
-  #define G26_MESH_VALIDATION
+  //#define G26_MESH_VALIDATION
   #if ENABLED(G26_MESH_VALIDATION)
     #define MESH_TEST_NOZZLE_SIZE    0.4  // (mm) Diameter of primary nozzle.
     #define MESH_TEST_LAYER_HEIGHT   0.2  // (mm) Default layer height for the G26 Mesh Validation Tool.
-    #define MESH_TEST_HOTEND_TEMP  215    // (°C) Default nozzle temperature for the G26 Mesh Validation Tool.
+    #define MESH_TEST_HOTEND_TEMP  205    // (°C) Default nozzle temperature for the G26 Mesh Validation Tool.
     #define MESH_TEST_BED_TEMP      60    // (°C) Default bed temperature for the G26 Mesh Validation Tool.
     #define G26_XY_FEEDRATE         20    // (mm/s) Feedrate for XY Moves for the G26 Mesh Validation Tool.
     #define G26_RETRACT_MULTIPLIER   1.0  // G26 Q (retraction) used by default between mesh test elements.
@@ -1351,7 +1407,7 @@
   //========================= Unified Bed Leveling ============================
   //===========================================================================
 
-  #define MESH_EDIT_GFX_OVERLAY   // Display a graphics overlay while editing the mesh
+  //#define MESH_EDIT_GFX_OVERLAY   // Display a graphics overlay while editing the mesh
 
   #define MESH_INSET 1              // Set Mesh bounds as an inset region of the bed
   #define GRID_MAX_POINTS_X 10      // Don't use more than 15 points per axis, implementation limited.
@@ -1393,10 +1449,16 @@
 #define LEVEL_BED_CORNERS
 
 #if ENABLED(LEVEL_BED_CORNERS)
-  #define LEVEL_CORNERS_INSET_LFRB { 30, 30, 30, 30 } // (mm) Left, Front, Right, Back insets
+  #define LEVEL_CORNERS_INSET_LFRB { 50, 50, 50, 50 } // (mm) Left, Front, Right, Back insets
   #define LEVEL_CORNERS_HEIGHT      0.1   // (mm) Z height of nozzle at leveling points
   #define LEVEL_CORNERS_Z_HOP       4.0   // (mm) Z height of nozzle between leveling points
   #define LEVEL_CENTER_TOO              // Move to the center after the last corner
+  #define LEVEL_CORNERS_USE_PROBE
+  #if ENABLED(LEVEL_CORNERS_USE_PROBE)
+    #define LEVEL_CORNERS_PROBE_TOLERANCE 0.1
+    #define LEVEL_CORNERS_VERIFY_RAISED   // After adjustment triggers the probe, re-probe to verify
+    //#define LEVEL_CORNERS_AUDIO_FEEDBACK
+  #endif
 #endif
 
 /**
@@ -1433,8 +1495,7 @@
 #endif
 
 // Homing speeds (mm/min)
-#define HOMING_FEEDRATE_XY (50*60)
-#define HOMING_FEEDRATE_Z  (4*60)
+#define HOMING_FEEDRATE_MM_M { (50*60), (50*60), (4*60) }
 
 // Validate that endstops are triggered on homing moves
 #define VALIDATE_HOMING_ENDSTOPS
@@ -1542,20 +1603,15 @@
 // @section temperature
 
 // Preheat Constants
-#define PREHEAT_1_LABEL       "PLA+"
-#define PREHEAT_1_TEMP_HOTEND 220
-#define PREHEAT_1_TEMP_BED     60
+#define PREHEAT_1_LABEL       "PLA"
+#define PREHEAT_1_TEMP_HOTEND 185
+#define PREHEAT_1_TEMP_BED     45
 #define PREHEAT_1_FAN_SPEED   255 // Value from 0 to 255
 
 #define PREHEAT_2_LABEL       "ABS"
 #define PREHEAT_2_TEMP_HOTEND 240
 #define PREHEAT_2_TEMP_BED    110
 #define PREHEAT_2_FAN_SPEED   255 // Value from 0 to 255
-
-#define PREHEAT_3_LABEL       "PLA"
-#define PREHEAT_3_TEMP_HOTEND 200
-#define PREHEAT_3_TEMP_BED     60
-#define PREHEAT_3_FAN_SPEED   255 // Value from 0 to 255
 
 /**
  * Nozzle Park
@@ -1646,6 +1702,10 @@
 
   // For a purge/clean station mounted on the X axis
   //#define NOZZLE_CLEAN_NO_Y
+
+  // Require a minimum hotend temperature for cleaning
+  #define NOZZLE_CLEAN_MIN_TEMP 170
+  //#define NOZZLE_CLEAN_HEATUP       // Heat up the nozzle instead of skipping wipe
 
   // Explicit wipe G-code script applies to a G12 with no arguments.
   //#define WIPE_SEQUENCE_COMMANDS "G1 X-17 Y25 Z10 F4000\nG1 Z1\nM114\nG1 X-17 Y25\nG1 X-17 Y95\nG1 X-17 Y25\nG1 X-17 Y95\nG1 X-17 Y25\nG1 X-17 Y95\nG1 X-17 Y25\nG1 X-17 Y95\nG1 X-17 Y25\nG1 X-17 Y95\nG1 X-17 Y25\nG1 X-17 Y95\nG1 Z15\nM400\nG0 X-10.0 Y-9.0"
@@ -1770,16 +1830,6 @@
  * you must uncomment the following option or it won't work.
  */
 #define SDSUPPORT
-
-/**
- * SD CARD: SPI SPEED
- *
- * Enable one of the following items for a slower SPI transfer speed.
- * This may be required to resolve "volume init" errors.
- */
-//#define SPI_SPEED SPI_HALF_SPEED
-//#define SPI_SPEED SPI_QUARTER_SPEED
-//#define SPI_SPEED SPI_EIGHTH_SPEED
 
 /**
  * SD CARD: ENABLE CRC
@@ -2213,6 +2263,11 @@
 //#define DGUS_LCD_UI_HIPRECY
 
 //
+// CR-6 OEM touch screen. A DWIN display with touch.
+//
+//#define DWIN_CREALITY_TOUCHLCD
+
+//
 // Touch-screen LCD for Malyan M200/M300 printers
 //
 //#define MALYAN_LCD
@@ -2238,7 +2293,7 @@
 
 //
 // Third-party or vendor-customized controller interfaces.
-// Sources should be installed in 'src/lcd/extensible_ui'.
+// Sources should be installed in 'src/lcd/extui'.
 //
 //#define EXTENSIBLE_UI
 
@@ -2252,19 +2307,7 @@
 
 /**
  * Specific TFT Model Presets. Enable one of the following options
-  
-	   
-	   
-				  
-		   
-			  
-	
-  
  * or enable TFT_GENERIC and set sub-options.
-		 
-						  
-		   
-			  
  */
 
 //
@@ -2322,6 +2365,16 @@
 // 320x240, 2.8", FSMC Stock Display from Longer/Alfawise
 //
 //#define LONGER_LK_TFT28
+
+//
+// 320x240, 2.8", FSMC Stock Display from ET4
+//
+//#define ANET_ET4_TFT28
+
+//
+// 480x320, 3.5", FSMC Stock Display from ET5
+//
+//#define ANET_ET5_TFT35
 
 //
 // Generic TFT with detailed options
@@ -2384,10 +2437,11 @@
 
   #define TOUCH_SCREEN_CALIBRATION
 
-  //#define XPT2046_X_CALIBRATION 12316
-  //#define XPT2046_Y_CALIBRATION -8981
-  //#define XPT2046_X_OFFSET        -43
-  //#define XPT2046_Y_OFFSET        257
+  //#define TOUCH_CALIBRATION_X 12316
+  //#define TOUCH_CALIBRATION_Y -8981
+  //#define TOUCH_OFFSET_X        -43
+  //#define TOUCH_OFFSET_Y        257
+  //#define TOUCH_ORIENTATION TOUCH_LANDSCAPE
 
   #if ENABLED(TFT_COLOR_UI)
     //#define SINGLE_TOUCH_NAVIGATION
